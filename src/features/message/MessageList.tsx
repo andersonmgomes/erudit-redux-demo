@@ -10,7 +10,6 @@ const dynamoDb = new DynamoDBClient({
     },
 });
 
-
 interface Item {
     PK: string;
     order: number;
@@ -18,7 +17,7 @@ interface Item {
     message: string;
 }
 
-async function fetchItems(): Promise<Item[]> {
+async function fetchItems(): Promise<Record<string, Item[]>> {
     const params = {
         TableName: 'EruditDemoStack-SingleTable787355C7-1GOOCK7AW39JN',
     };
@@ -27,39 +26,54 @@ async function fetchItems(): Promise<Item[]> {
         const command = new ScanCommand(params);
         const data = await dynamoDb.send(command);
         const items = data.Items?.map((item) => unmarshall(item)) as Item[];
-        console.log('Fetched items:', items);
-        return items;
+        const groupedItems = items.reduce((acc, item) => {
+            if (!acc[item.PK]) {
+                acc[item.PK] = [];
+            }
+            acc[item.PK].push(item);
+            return acc;
+        }, {} as Record<string, Item[]>);
+        console.log('Fetched items:', groupedItems);
+        return groupedItems;
     } catch (error) {
         console.error('Error fetching items:', error);
-        return [];
+        return {};
     }
 }
 
 const MessageList: React.FC = () => {
-    const [items, setItems] = useState<Item[]>([]);
+    const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
 
     useEffect(() => {
         async function fetchData() {
             console.log('Fetching items...');
             const fetchedItems = await fetchItems();
             console.log('Items fetched:', fetchedItems);
-            setItems(fetchedItems);
+            setGroupedItems(fetchedItems);
         }
 
         fetchData();
     }, []);
 
-    console.log('Rendering items:', items);
+    console.log('Rendering items:', groupedItems);
 
     return (
         <ul className="list-group">
-            {items.map((item) => (
-                <li key={item.PK} className="list-group-item">
-                    {item.author}: {item.message}
-                </li>
+            {Object.entries(groupedItems).map(([pk, items]) => (
+                <React.Fragment key={pk}>
+                    <li className="list-group-item list-group-item-primary">
+                        {pk}
+                    </li>
+                    {items.map((item) => (
+                        <li key={`${pk}-${item.order}`} className="list-group-item">
+                            {item.author}: {item.message}
+                        </li>
+                    ))}
+                </React.Fragment>
             ))}
         </ul>
     );
+
 };
 
 export default MessageList;
