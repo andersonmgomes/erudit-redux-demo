@@ -8,6 +8,7 @@ interface Item {
     order: number;
     author: string;
     message: string;
+    sentiment_analysis: string;
 }
 
 function App() {
@@ -31,6 +32,9 @@ function App() {
                         </p>
                         <p>
                             <strong>Message:</strong> {selectedMessage.message}
+                        </p>
+                        <p>
+                            <strong>Sentiment Analysis:</strong> {selectedMessage.sentiment_analysis}
                         </p>
                     </div>
                 ) : (

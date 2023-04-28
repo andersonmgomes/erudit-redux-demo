@@ -15,6 +15,7 @@ interface Item {
     order: number;
     author: string;
     message: string;
+    sentiment_analysis: string;
 }
 
 async function fetchItems(): Promise<Record<string, Item[]>> {
