@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 
-const dynamoDb = new DynamoDBClient({
+export const dynamoDb = new DynamoDBClient({
     region: 'us-east-1',
     credentials: {
         accessKeyId: process.env.REACT_APP_AWS_ACCESS_ID!,

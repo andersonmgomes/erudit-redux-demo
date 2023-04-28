@@ -31,6 +31,7 @@ const MessageEditor: React.FC<MessageEditorProps> = ({ item, onSave }) => {
                         cols={50}
                     />
                     <br />
+                    <h4>{item.sentiment_analysis}</h4>
                     <button onClick={handleSave}>Save</button>
                 </>
             )}
