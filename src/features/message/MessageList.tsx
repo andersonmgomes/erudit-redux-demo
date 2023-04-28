@@ -41,8 +41,13 @@ async function fetchItems(): Promise<Record<string, Item[]>> {
     }
 }
 
-const MessageList: React.FC = () => {
+interface MessageListProps {
+    onItemClick: (item: Item) => void;
+}
+
+const MessageList: React.FC<MessageListProps> = ({ onItemClick }) => {
     const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
+    const [selectedMessage, setSelectedMessage] = useState<Item | null>(null);
 
     useEffect(() => {
         async function fetchData() {
@@ -57,15 +62,21 @@ const MessageList: React.FC = () => {
 
     console.log('Rendering items:', groupedItems);
 
+    const handleItemClick = (item: Item) => {
+        setSelectedMessage(item);
+    };
+
     return (
         <ul className="list-group">
             {Object.entries(groupedItems).map(([pk, items]) => (
                 <React.Fragment key={pk}>
-                    <li className="list-group-item list-group-item-primary">
-                        {pk}
-                    </li>
+                    <li className="list-group-item list-group-item-primary">{pk}</li>
                     {items.map((item) => (
-                        <li key={`${pk}-${item.order}`} className="list-group-item">
+                        <li
+                            key={`${pk}-${item.order}`}
+                            className="list-group-item"
+                            onClick={() => onItemClick(item)}
+                        >
                             {item.author}: {item.message}
                         </li>
                     ))}
@@ -73,7 +84,6 @@ const MessageList: React.FC = () => {
             ))}
         </ul>
     );
-
 };
 
 export default MessageList;
