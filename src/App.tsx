@@ -1,45 +1,24 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
-import MessageList from './features/message/MessageList';
+import MessageList, { Item } from './features/message/MessageList';
+import MessageEditor from './features/message/MessageEditor';
 
-interface Item {
-    PK: string;
-    order: number;
-    author: string;
-    message: string;
-    sentiment_analysis: string;
-}
 
 function App() {
-    const [selectedMessage, setSelectedMessage] = useState<Item | null>(null);
+    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-    const handleItemClick = (item: Item) => {
-        setSelectedMessage(item);
+    const handleSave = (item: Item) => {
+        console.log('Saving edited item:', item);
     };
 
     return (
         <div className="app-container d-flex h-100">
             <div className="message-list-wrapper">
-                <MessageList onItemClick={handleItemClick} />
+                <MessageList onItemClick={(item) => setSelectedItem(item)} />
             </div>
             <div className="main-panel-wrapper flex-grow-1">
-                {selectedMessage ? (
-                    <div>
-                        <h3>Message Details</h3>
-                        <p>
-                            <strong>Author:</strong> {selectedMessage.author}
-                        </p>
-                        <p>
-                            <strong>Message:</strong> {selectedMessage.message}
-                        </p>
-                        <p>
-                            <strong>Sentiment Analysis:</strong> {selectedMessage.sentiment_analysis}
-                        </p>
-                    </div>
-                ) : (
-                    <h2>Main Panel</h2>
-                )}
+                <MessageEditor item={selectedItem} onSave={handleSave} />
             </div>
         </div>
     );

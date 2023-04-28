@@ -10,7 +10,7 @@ const dynamoDb = new DynamoDBClient({
     },
 });
 
-interface Item {
+export interface Item {
     PK: string;
     order: number;
     author: string;
