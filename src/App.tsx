@@ -52,7 +52,8 @@ function App() {
 
 
     const handleItemsUpdated = (updatedItems: Record<string, Item[]>) => {
-        // You can use this function to perform any additional tasks after items are updated.
+        // Use this function to perform any additional tasks after items are updated.
+        console.log('Items updated:', updatedItems);
     };
 
     useEffect(() => {
