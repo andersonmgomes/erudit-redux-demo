@@ -5,6 +5,41 @@ import MessageList, { Item, dynamoDb, fetchItems } from './features/message/Mess
 import MessageEditor from './features/message/MessageEditor';
 import { UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+
+
+const sqs = new SQSClient({
+    region: 'us-east-1',
+    credentials: {
+        accessKeyId: process.env.REACT_APP_AWS_ACCESS_ID!,
+        secretAccessKey: process.env.REACT_APP_AWS_SECRET_KEY!,
+    },
+});
+
+async function sendToSQSQueue(queueUrl: string, message: string) {
+    const params = {
+        QueueUrl: queueUrl,
+        MessageBody: message,
+    };
+
+    console.log('Sending message to this SQS queue:', queueUrl);
+
+    try {
+        const command = new SendMessageCommand(params);
+        await sqs.send(command);
+        console.log('Message sent to SQS queue:', message);
+    } catch (error) {
+        console.error('Error sending message to SQS queue:', error);
+    }
+}
+
+const classifierQueueUrl = 'https://sqs.us-east-1.amazonaws.com/436594502614/EruditDemoStack-ChatSimulatorQueueD0DF006C-gmQXGtmY4MGc';
+async function sendToSQSClassifierQueue(item: Item) {
+    // Convert the updated item to a JSON string
+    const itemJson = JSON.stringify(item);
+    // Send the updated item to the SQS queue
+    await sendToSQSQueue(classifierQueueUrl, itemJson);
+}
 
 function App() {
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
@@ -44,6 +79,9 @@ function App() {
             // Fetch the updated items and pass them to the handleItemsUpdated function
             const updatedItems = await fetchItems();
             handleItemsUpdated(updatedItems);
+
+            await sendToSQSClassifierQueue(item);
+
         } catch (error) {
             console.error('Error updating item:', error);
             setUpdateSuccess(false);

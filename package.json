@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.321.1",
+    "@aws-sdk/client-sqs": "^3.321.1",
     "@aws-sdk/util-dynamodb": "^3.321.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
