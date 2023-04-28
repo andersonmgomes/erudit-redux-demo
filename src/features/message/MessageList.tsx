@@ -18,7 +18,7 @@ export interface Item {
     sentiment_analysis: string;
 }
 
-async function fetchItems(): Promise<Record<string, Item[]>> {
+export async function fetchItems(): Promise<Record<string, Item[]>> {
     const params = {
         TableName: 'EruditDemoStack-SingleTable787355C7-1GOOCK7AW39JN',
     };
@@ -44,9 +44,10 @@ async function fetchItems(): Promise<Record<string, Item[]>> {
 
 interface MessageListProps {
     onItemClick: (item: Item) => void;
+    onItemsUpdated: (items: Record<string, Item[]>) => void;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ onItemClick }) => {
+const MessageList: React.FC<MessageListProps> = ({ onItemClick, onItemsUpdated }) => {
     const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
 
     useEffect(() => {
@@ -55,10 +56,11 @@ const MessageList: React.FC<MessageListProps> = ({ onItemClick }) => {
             const fetchedItems = await fetchItems();
             console.log('Items fetched:', fetchedItems);
             setGroupedItems(fetchedItems);
+            onItemsUpdated(fetchedItems);
         }
 
         fetchData();
-    }, []);
+    }, [onItemsUpdated]);
 
     console.log('Rendering items:', groupedItems);
 

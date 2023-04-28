@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
-import MessageList, { Item, dynamoDb } from './features/message/MessageList';
+import MessageList, { Item, dynamoDb, fetchItems } from './features/message/MessageList';
 import MessageEditor from './features/message/MessageEditor';
 import { UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
@@ -41,10 +41,18 @@ function App() {
         try {
             await updateItemMessage(item);
             setUpdateSuccess(true);
+            // Fetch the updated items and pass them to the handleItemsUpdated function
+            const updatedItems = await fetchItems();
+            handleItemsUpdated(updatedItems);
         } catch (error) {
             console.error('Error updating item:', error);
             setUpdateSuccess(false);
         }
+    };
+
+
+    const handleItemsUpdated = (updatedItems: Record<string, Item[]>) => {
+        // You can use this function to perform any additional tasks after items are updated.
     };
 
     useEffect(() => {
@@ -59,7 +67,7 @@ function App() {
     return (
         <div className="app-container d-flex h-100">
             <div className="message-list-wrapper">
-                <MessageList onItemClick={handleItemClick} />
+                <MessageList onItemClick={handleItemClick} onItemsUpdated={handleItemsUpdated} />
             </div>
             <div className="main-panel-wrapper flex-grow-1">
                 {updateSuccess === true && (
