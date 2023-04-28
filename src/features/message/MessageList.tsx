@@ -48,7 +48,6 @@ interface MessageListProps {
 
 const MessageList: React.FC<MessageListProps> = ({ onItemClick }) => {
     const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
-    const [selectedMessage, setSelectedMessage] = useState<Item | null>(null);
 
     useEffect(() => {
         async function fetchData() {
@@ -62,10 +61,6 @@ const MessageList: React.FC<MessageListProps> = ({ onItemClick }) => {
     }, []);
 
     console.log('Rendering items:', groupedItems);
-
-    const handleItemClick = (item: Item) => {
-        setSelectedMessage(item);
-    };
 
     return (
         <ul className="list-group">
